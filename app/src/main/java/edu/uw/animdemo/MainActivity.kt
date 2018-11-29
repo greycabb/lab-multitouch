@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.text.method.ScrollingMovementMethod
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +23,9 @@ class MainActivity : AppCompatActivity() {
     private var radiusAnim: AnimatorSet? = null
 
     private var mDetector: GestureDetectorCompat? = null
+
+    var touches: MutableMap<Int, Ball>? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +38,19 @@ class MainActivity : AppCompatActivity() {
         mDetector = GestureDetectorCompat(this, MyGestureListener())
     }
 
+    fun addTouch(pointerId: Int, xCoord: Float, yCoord: Float) {
+        touches?.put(pointerId, Ball(xCoord, yCoord, 100.toFloat()))
+    }
+
+    fun removeTouch(pointerId: Int) {
+        touches?.remove(pointerId)
+    }
+
+    private fun moveTouch(pointerId: Int, xCoord: Float, yCoord: Float) {
+        removeTouch(pointerId)
+        addTouch(pointerId, xCoord, yCoord)
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         //Log.v(TAG, event.toString());
 
@@ -43,11 +60,19 @@ class MainActivity : AppCompatActivity() {
         val x = event.x
         val y = event.y - supportActionBar!!.height //closer to center...
 
+        val pointerIndex = MotionEventCompat.getActionIndex(event)
+        Log.v(TAG, "Action index of press: $pointerIndex")
+
+        val uniquePointerId = MotionEventCompat.getPointerId(event, pointerIndex)
+        Log.v(TAG, "Unique pointer ID: $uniquePointerId")
+
+        addTouch(uniquePointerId, x, y)
+
         val action = MotionEventCompat.getActionMasked(event)
         when (action) {
             MotionEvent.ACTION_DOWN //put finger down
             -> {
-                //Log.v(TAG, "finger down");
+                Log.v(TAG, "finger down");
 
                 val xAnim = ObjectAnimator.ofFloat(view!!.ball, "x", x)
                 xAnim.duration = 1000
@@ -65,13 +90,21 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             MotionEvent.ACTION_MOVE //move finger
-            ->
-                //Log.v(TAG, "finger move");
+            -> {
+                Log.v("ACTION_MOVE", "finger move");
                 //                view.ball.cx = x;
                 //                view.ball.cy = y;
+                touches?.keys?.forEach {
+
+                }
                 return true
-            MotionEvent.ACTION_UP //lift finger up
-                , MotionEvent.ACTION_CANCEL //aborted gesture
+            }
+            MotionEvent.ACTION_UP // Lift up
+            -> {
+                removeTouch(uniquePointerId)
+                return true
+            }
+            MotionEvent.ACTION_CANCEL //aborted gesture
                 , MotionEvent.ACTION_OUTSIDE //outside bounds
             -> return super.onTouchEvent(event)
             else -> return super.onTouchEvent(event)
