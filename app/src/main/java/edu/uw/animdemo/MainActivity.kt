@@ -94,8 +94,14 @@ class MainActivity : AppCompatActivity() {
                 Log.v("ACTION_MOVE", "finger move");
                 //                view.ball.cx = x;
                 //                view.ball.cy = y;
+//                touches?.keys?.forEach {
+//
+//                }
                 touches?.keys?.forEach {
-
+                    /*
+                    In MainActivity, when a MOVE event occurs, loop through all of the pointer indices in the event. Get the pointer id and x,y coordinates of each, and use those to call the moveTouch() method on the drawing View. You will be “moving” all of the balls, even if most are just moving to the same place they were.
+                    */
+                    // DrawingView.moveTouch(it, touches.get(it).cx, touches.get(it).cy
                 }
                 return true
             }

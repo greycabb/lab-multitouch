@@ -8,6 +8,9 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * A basic custom view for drawing on.
  * @author Joel Ross
@@ -25,6 +28,8 @@ public class DrawingView extends View {
     private Paint whitePaint; //drawing variables (pre-defined for speed)
 
     public Ball ball; //public for easy access
+
+    public HashMap<Integer, Ball> balls;
 
     /**
      * We need to override all the constructors, since we don't know which will be called
@@ -97,5 +102,11 @@ public class DrawingView extends View {
         }
         canvas.drawBitmap(bmp, 0, 0, null); //and then draw the BitMap onto the canvas.
         //Canvas bmc = new Canvas(bmp); //we can also make a canvas out of a Bitmap to draw on that (like fetching g2d from a BufferedImage) if we don't want to double-buffer
+    }
+
+    public void moveTouch(int pointerId, float newX, float newY) {
+        Ball theBall = balls.get(pointerId);
+        theBall.setX(newX);
+        theBall.setY(newY);
     }
 }
